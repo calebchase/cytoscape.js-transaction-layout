@@ -1,9 +1,39 @@
 fs = require('fs');
 
+let shortSum = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
+let longSum =
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sapien ante, tristique nec.';
+
+let personImages = [
+    'm1.png',
+    'm2.png',
+    'm3.png',
+    'm4.png',
+    'f1.png',
+    'f2.png',
+    'f3.png',
+    'f4.png',
+    'f5.png',
+    'f6.png',
+];
+
+let names = [
+    { f: 'Manny', l: 'Otto' },
+    { f: 'Zack', l: 'Haven' },
+    { f: 'Archie', l: 'Ramirez' },
+    { f: 'Darryl', l: 'Hammond' },
+    { f: 'Philis', l: 'Lyn' },
+    { f: 'Lisa', l: 'Everlee' },
+    { f: 'Breana', l: 'Alyse' },
+    { f: 'Jan', l: 'King' },
+    { f: 'Cathy', l: 'Ingram' },
+    { f: 'Kellie', l: 'Maldonado' },
+];
+
 let options = {
-    personCount: 10,
+    personCount: 9,
     personInteractionPercent: 0.2,
-    transactionRange: [4, 10],
+    transactionRange: [10, 15],
 };
 
 let eles = [];
@@ -31,6 +61,7 @@ function createTransactions(eles, options, i, j) {
         eles.push({
             group: 'edges',
             data: {
+                type: 't',
                 source: `${i}`,
                 target: `${i}:${j}:${k}`,
             },
@@ -39,6 +70,7 @@ function createTransactions(eles, options, i, j) {
         eles.push({
             group: 'edges',
             data: {
+                type: 't',
                 source: `${i}:${j}:${k}`,
                 target: `${j}`,
             },
@@ -50,7 +82,15 @@ function createTransactions(eles, options, i, j) {
 function createNode(eles, i) {
     eles.push({
         group: 'nodes',
-        data: { id: `${i}`, type: 'person' },
+        data: {
+            id: `${i}`,
+            type: 'person',
+            image: personImages[i],
+            shortSum: shortSum,
+            longSum: longSum,
+            shortName: names[i].l,
+            longName: names[i].f + ' ' + names[i].l,
+        },
     });
 
     return eles;

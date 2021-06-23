@@ -1,31 +1,38 @@
 {
-  "name": "cytoscape.js-transaction-layout",
-  "version": "1.0.0",
-  "description": "TODO",
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/calebchase/cytoscape.js-transaction-layout.git"
-  },
-  "author": {
-    "name": "VARLAB - University of Central Florida",
-    "url": "https://cs.ucf.edu"
-  },
-  "contributors": [
-    {
-      "name": "Caleb Chase"
+    "name": "cytoscape.js-transaction-layout",
+    "version": "1.0.0",
+    "description": "TODO",
+    "main": "index.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/calebchase/cytoscape.js-transaction-layout.git"
+    },
+    "author": {
+        "name": "VARLAB - University of Central Florida",
+        "url": "https://cs.ucf.edu"
+    },
+    "contributors": [
+        {
+            "name": "Caleb Chase"
+        }
+    ],
+    "scripts": {
+        "start": "webpack serve --config webpack.config.js",
+        "build": "webpack --mode development --config webpack.config.js",
+        "dataGen": "cd ./dataGen && node genForce.js",
+        "build:release": "webpack --mode production --config webpack.config.js",
+        "flow": "flow"
+    },
+    "license": "ISC",
+    "devDependencies": {
+        "prettier": "2.3.0",
+        "raw-loader": "^4.0.2",
+        "webpack": "^5.37.0",
+        "webpack-cli": "^4.7.0",
+        "webpack-dev-server": "^3.11.2"
+    },
+    "dependencies": {
+        "app-root-path": "^3.0.0",
+        "cytoscape-html-node": "^2.0.14"
     }
-  ],
-  "scripts": {
-    "start": "webpack serve --config webpack.config.js",
-    "build": "webpack --mode development --config webpack.config.js",
-    "build:release": "webpack --mode production --config webpack.config.js"
-  },
-  "license": "ISC",
-  "devDependencies": {
-    "prettier": "^2.3.0",
-    "webpack": "^5.37.0",
-    "webpack-cli": "^4.7.0",
-    "webpack-dev-server": "^3.11.2"
-  }
 }

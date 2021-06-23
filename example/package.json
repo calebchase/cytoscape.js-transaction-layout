@@ -1,18 +1,23 @@
 {
-  "name": "example",
-  "version": "1.0.0",
-  "description": "Example for cytoscape.js-transaction-layout",
-  "main": "index.js",
-  "scripts": {
-    "start": "webpack serve --mode development --config webpack.config.js"
-  },
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "webpack": "^5.37.0",
-    "webpack-cli": "^4.7.0"
-  },
-  "dependencies": {
-    "cytoscape": "^3.19.0"
-  }
+    "name": "example",
+    "version": "1.0.0",
+    "description": "Example for cytoscape.js-transaction-layout",
+    "main": "index.js",
+    "scripts": {
+        "start": "webpack serve --mode development --config webpack.config.js",
+        "flow": "flow",
+        "flow-typed": "flow-typed"
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "raw-loader": "^4.0.2",
+        "webpack": "^5.37.0",
+        "webpack-cli": "^4.7.0"
+    },
+    "dependencies": {
+        "cytoscape": "^3.19.0",
+        "cytoscape-cxtmenu": "^3.4.0",
+        "cytoscape-fcose": "^2.0.0"
+    }
 }
