@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
             {
                 selector: '.transaction',
                 style: {
+                    label: 'data(id)',
                     'background-image': 'https://pic.onlinewebfonts.com/svg/img_262195.png',
                     'background-fit': 'contain',
                     'background-color': 'lightgreen',
@@ -68,6 +69,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const htmlnode = cy.htmlnode();
     htmlnode.createHtmlNode(cytoscape, cy, {
+        test: {
+            query: '[type = "cpn"]',
+            nodeStyle: {
+                base: 'htmlNodeBaseStyle',
+                alt: 'htmlNodeAltStyle',
+            },
+            template: [
+                {
+                    zoomRange: [0.01, 100],
+
+                    template: {
+                        html: `
+                        <div id="htmlLabel:#{data.id}" style="width: 70px;text-align:center;font-size:60"class="">
+                            <div style="background-color:lightblue">#{data.w1}<\div>
+                            <div style="background-color:lightpink">#{data.w2}<\div>
+                            <div style="background-color:lightgreen">#{data.w3}<\div>
+                        </div>
+                        `,
+                        cssClass: '',
+                    },
+                },
+            ],
+        },
         person: {
             query: "[type = 'person']",
             nodeStyle: {
@@ -128,17 +152,35 @@ document.addEventListener('DOMContentLoaded', function () {
         forceLayoutOptions: {
             name: 'fcose',
             quality: 'proof',
+            animationDuration: 300,
             animate: false,
+
             numIter: 25000,
+            sampleSize: 50,
 
-            nodeRepulsion: (node) => 2500000,
-
-            idealEdgeLength: (edge) => {
-                let count = edge.data('count');
-                return 30000 / (count != undefined ? 20 : 45);
+            nodeRepulsion: (node) => {
+                if (node.data('cw')) return 300000;
+                if (node.data('type') == 'transaction') return 0;
+                return 30000;
             },
-            edgeElasticity: (edge) => 10.75,
-            nodeSeparation: 3000,
+            // tile: false,
+
+            gravityRangeCompound: 100.5,
+            gravityCompound: 100.0,
+            idealEdgeLength: (edge) => {
+                if (edge.data('col')) {
+                    console.log('wowowowowo');
+                    return 30000 / 60;
+                }
+                if (edge.data('type') == 'long') {
+                    console.log('1312312312');
+                    return 30000 / 30;
+                }
+                let count = edge.data('count');
+                return 30000 / (count != undefined ? 20 : 80);
+            },
+            edgeElasticity: (edge) => 0.75,
+            nodeSeparation: 4000,
             // gravityRangeCompound: 10000,
             // gravityCompound: 10000.0,
         },
@@ -158,6 +200,16 @@ document.addEventListener('DOMContentLoaded', function () {
         ],
     });
 
+    cy.on('tap', 'node[type != "person"]', (event) => {
+        layoutTrans.collapseCompoundNode(event.target);
+    });
+
+    cy.on('tap', 'node[type = "person"]', (event) => {
+        console.log(event.target.data('id'));
+        document.getElementById('htmlLabel:' + event.target.data('id')).innerHTML =
+            '<div>test</div>';
+    });
+
     cy.cxtmenu({
         selector: 'node',
 
@@ -171,9 +223,21 @@ document.addEventListener('DOMContentLoaded', function () {
             {
                 content: 'Toggle Collapse',
                 select: function (ele) {
-                    layoutTrans.collapseTransactions(ele.id());
+                    layoutTrans.collapseTransactions(ele.id(), true);
+                },
+            },
+            {
+                content: 'Collapse Compound',
+                select: function (ele) {
+                    layoutTrans.collapseCompoundNode(ele);
                 },
             },
         ],
     });
+    setTimeout(function () {
+        cy.nodes('[type = "cpn"]').forEach((node) => {
+            console.log('cpn');
+            document.getElementById('htmlLabel:' + node.data('id')).style.display = 'none';
+        });
+    }, 100);
 });

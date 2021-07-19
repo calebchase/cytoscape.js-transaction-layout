@@ -1,3 +1,122 @@
+function getSquareTranspose(eles, cy) {
+    // count = eles.length;
+    let count = eles.length;
+    let curSide = 0;
+    let curArrDim = 2;
+    let arrDim = Math.ceil(Math.sqrt(count));
+    let isSquare = arrDim == Math.sqrt(count);
+
+    let arr = [];
+    for (let i = 0; i < arrDim + 1; i++) arr.push([]);
+
+    let eleIndex = 0;
+    for (let i = 0; eleIndex < count; i++) {
+        let stuff = '';
+        console.log(i);
+        for (let j = 0; j < arrDim; j++) {
+            if (
+                i != 0 &&
+                count - eleIndex - 1 != 0 &&
+                (count - eleIndex) % (arrDim - 1) == 0 &&
+                !isSquare &&
+                j + 1 == arrDim
+            ) {
+                // i++;
+                continue;
+            } else if (eleIndex < count) {
+                arr[i][j] = eles[eleIndex];
+                stuff += eles[eleIndex].id() + '. ';
+                eleIndex++;
+            }
+        }
+        console.log(stuff);
+    }
+    console.table(arr);
+
+    for (let i = 0; i < count; i++) {
+        if (i == 0 || i == 1) {
+            eles[i] = arr[0][i];
+            console.log(0, i);
+
+            // console.log(eles[i].id());
+        } else if (curSide % 2 == 0) {
+            // insert Bottom
+            for (let j = 0; i < count && j < curArrDim; i++ && j++) {
+                // console.log(curSide);
+                // arr[curSide / 2 + 1].push(eles[i]);
+                if (arr[curSide / 2 + 1][j] != undefined) {
+                    eles[i] = arr[curSide / 2 + 1][j];
+                    console.log(curSide / 2 + 1 + ' ' + j, eles[i].id());
+                } else {
+                    i--;
+                }
+            }
+            i--;
+            curSide++;
+        } else {
+            // insert left
+            for (let j = 0; i < count && j < curArrDim; i++ && j++) {
+                // arr[j].push(eles[i]);
+                console.log(i, count, j, curArrDim);
+                if ((eles[i] = arr[j][curArrDim] != undefined)) eles[i] = arr[j][curArrDim];
+                else i--;
+                console.log(j + ' ' + curArrDim, eles[i].id());
+            }
+            i--;
+            curSide++;
+            curArrDim++;
+        }
+        // console.table(arr);
+    }
+    // console.table(arr);
+    console.log('adsf');
+    eles.forEach((ele) => console.log(ele.id()));
+    console.log('adsf');
+    return eles;
+}
+
+function getBadSquareTranspose(eles) {
+    // count = eles.length;
+    let count = eles.length;
+    let curSide = 0;
+    let curArrDim = 2;
+    let arrDim = Math.sqrt(count);
+
+    let arr = [];
+    for (let i = 0; i < arrDim; i++) arr.push([]);
+
+    for (let i = 0; i < count; i++) {
+        if (i == 0 || i == 1) arr[Math.floor(i / arrDim)].push(eles[i]);
+        else if (curSide % 2 == 0) {
+            // insert Bottom
+            for (let j = 0; i < count && j < curArrDim; i++ && j++) {
+                console.log(curSide);
+                arr[curSide / 2 + 1].push(eles[i]);
+            }
+            i--;
+            curSide++;
+        } else {
+            // insert left
+            for (let j = 0; i < count && j < curArrDim; i++ && j++) {
+                arr[j].push(eles[i]);
+            }
+            i--;
+            curSide++;
+            curArrDim++;
+        }
+        // console.table(arr);
+    }
+    // console.table(arr);
+    let eleIndex = 0;
+
+    arr.forEach((subArr) => {
+        subArr.forEach((ele) => {
+            eles[eleIndex] = ele;
+            eleIndex++;
+        });
+    });
+    return eles;
+}
 function getTransactions(person, cy) {
     let data = {
         transactions: [],
@@ -5,6 +124,7 @@ function getTransactions(person, cy) {
         targetSet: new Set(),
         transactionsTo: {},
         removed: cy.collection(),
+        compoundEles: cy.collection(),
     };
 
     person.connectedEdges(`[source = "${person.id()}"]`)?.forEach((edge) => {
@@ -25,83 +145,95 @@ function getTransactions(person, cy) {
     return data;
 }
 
-function appendConstraint(baseData, newData) {
-    newData.forEach((data) => {
-        baseData.push(data);
-    });
-    return newData;
+function getCol(matrix, col) {
+    var column = [];
+    for (var i = 0; i < matrix.length; i++) {
+        if (matrix[i][col] != undefined) column.push(matrix[i][col].id());
+    }
+    return column;
 }
 
-function squareUpNodes(eles, count, forceLayout, center) {
+function squareUpNodes(eles, count, cy) {
     let dim = Math.ceil(Math.sqrt(count));
-    let verticalConstraints = [];
-    let horizontalConstraints = [];
-    let eleIndex = 0;
-    let constraint = [];
-
-    eles = eles.filter('node');
     let initIndex = eles[0].position();
-    let offset = 100;
+    let offset = 110;
+    let eleIndex = 0;
+    let verConstraint = [];
+    let horConstraint = [];
+    eles = eles.filter('node').sort(function (a, b) {
+        return a.data('weight') - b.data('weight');
+    });
+    cy.remove(eles);
 
-    for (let i = 0; i < dim; i++) {
-        let horiConst = [];
+    eles = getSquareTranspose(eles);
+    console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+    // eles.forEach((ele) => console.log(ele.data('weight')));
 
-        for (let j = 0; j < dim && eleIndex < count; j++) {
-            eles[eleIndex].position({ x: initIndex.x + offset * i, y: initIndex.y + offset * j });
-            constraint.push({
-                nodeId: eles[eleIndex].id(),
-                position: eles[eleIndex].position(),
+    eles.forEach((id) => console.log(id.id()));
+    cy.add(eles);
+
+    let posArray = [];
+
+    for (let i = 0; i < count; i++) {
+        if (i % dim == 0) {
+            posArray.push([]);
+        }
+        posArray[Math.floor(i / dim)].push(eles[i]);
+    }
+
+    for (let i = 0; i < posArray.length - 1; i++) {
+        verConstraint.push(posArray[i].map((x) => x.id()));
+        for (let j = 0; j < posArray.length; j++) {}
+    }
+
+    for (let i = 0; i < posArray.length; i++) {
+        for (let j = 0; j < posArray[i].length; j++) {
+            horConstraint.push(getCol(posArray, j));
+        }
+        break;
+    }
+
+    let relPlacement = [];
+    for (let i = 0; i < posArray.length - 1; i++) {
+        for (let j = 0; j < posArray.length - 1; j++) {
+            posArray[i][j].position({
+                x: initIndex.x + offset * i,
+                y: initIndex.y + offset * j,
             });
-            horiConst.push(eles[eleIndex].id());
-            eleIndex++;
-        }
-        horizontalConstraints.push(horiConst);
-    }
-    // appendConstraint(forceLayout.options.alignmentConstraint.horizontal, horizontalConstraints);
 
-    eleIndex = 0;
-    for (let i = 0; i < dim; i++) {
-        let vertConst = [];
-        for (let j = 0; j < dim; j++) {
-            eleIndex++;
-            if (horizontalConstraints[j][i] != undefined)
-                vertConst.push(horizontalConstraints[j][i]);
-        }
-        verticalConstraints.push(vertConst);
-    }
-
-    let relA = [];
-    let relB = [];
-    for (let i = 0; i < dim; i++) {
-        let vertConst = [];
-        for (let j = 0; j < dim; j++) {
-            eleIndex++;
-            if (
-                horizontalConstraints[i][j] != undefined &&
-                horizontalConstraints[i][j + 1] != undefined
-            )
-                relA.push({
-                    left: horizontalConstraints[i][j],
-                    right: horizontalConstraints[i][j + 1],
-                    gap: 100,
+            if (posArray[i][j + 1] != undefined) {
+                relPlacement.push({
+                    left: posArray[i][j].id(),
+                    right: posArray[i][j + 1].id(),
                 });
+            }
 
-            if (
-                i + 1 < dim &&
-                horizontalConstraints[i][j] != undefined &&
-                horizontalConstraints[i + 1][j] != undefined
-            )
-                relB.push({
-                    top: horizontalConstraints[i][j],
-                    bottom: horizontalConstraints[i + 1][j],
-                    gap: 100,
+            if (posArray[i + 1][j] != undefined)
+                relPlacement.push({
+                    top: posArray[i][j].id(),
+                    bottom: posArray[i + 1][j].id(),
                 });
         }
     }
-    return constraint;
-    // appendConstraint(forceLayout.options.relativePlacementConstraint, relA);
-    // appendConstraint(forceLayout.options.relativePlacementConstraint, relB);
-    // appendConstraint(forceLayout.options.alignmentConstraint.vertical, verticalConstraints);
+
+    for (let i = 0; i < dim; i++) {
+        for (let j = 0; j < dim && eleIndex < count; j++) {
+            // eles[eleIndex].position({ x: initIndex.x + offset * i, y: initIndex.y + offset * j });
+            if (eles[eleIndex].data('weight') == 4)
+                eles[eleIndex].style('background-color', 'lightblue');
+            if (eles[eleIndex].data('weight') == 5)
+                eles[eleIndex].style('background-color', 'lightpink');
+            eleIndex++;
+        }
+    }
+
+    return {
+        rel: relPlacement,
+        ver: verConstraint,
+        hor: horConstraint,
+    };
+
+    return relPlacement;
 }
 
 function getNodeCenterPos(a, b) {
@@ -118,6 +250,7 @@ class transactionLayout {
     constructor(cy, options) {
         this.cy = cy;
         this.options = options;
+        this.removedTransactions = {};
     }
 
     initData() {
@@ -132,77 +265,123 @@ class transactionLayout {
         for (let person in this.persons) {
             this.collapseTransactions(person);
         }
+        this.runForceLayout();
+        for (let person in this.persons) {
+            this.collapseTransactions(person, false, true);
+        }
+        this.options.forceLayoutOptions.animate = true;
+        this.runForceLayout();
     }
 
-    compoundTrnasactions(id, query) {
-        this.cy.remove(this.cy.nodes(`#${id}`).connectedEdges(`[source = "${id}"]`));
+    compoundTrnasactions(id, initCol, query) {
+        let removedEdges = this.cy.remove(
+            this.cy.nodes(`#${id}`).connectedEdges(`[source = "${id}"][type != "compoundEdge"]`)
+        );
+        let targetWidthPair = {};
+
+        removedEdges.forEach((edge) => {
+            targetWidthPair[edge.target().id()] = edge.style('width');
+        });
+
         let compoundNodes = [];
+        let compoundEles = this.cy.collection();
 
         this.persons[id].targetSet.forEach((target) => {
-            let col = cy.collection();
-            let colCount = 0;
+            if (
+                (initCol && this.persons[id].transactionsTo[target.id()].length < 100) ||
+                !initCol
+            ) {
+                let col = cy.collection();
+                let colCount = 0;
 
-            let parentNode = this.cy.add([
-                {
-                    group: 'nodes',
-                    data: { cw: true },
-                },
-            ]);
-
-            this.cy.add([
-                {
-                    group: 'edges',
-                    data: {
-                        source: `${id}`,
-                        target: `${parentNode.id()}`,
+                let parentNode = this.cy.add([
+                    {
+                        group: 'nodes',
+                        data: {
+                            cw: true,
+                            type: 'cpn',
+                            w1: 1,
+                            w2: 0,
+                            w3: 0,
+                        },
                     },
-                },
-                {
-                    group: 'edges',
-                    data: {
-                        source: `${parentNode.id()}`,
-                        target: `${target?.id()}`,
+                ]);
+
+                let newCompEdges = this.cy.add([
+                    {
+                        group: 'edges',
+                        data: {
+                            source: `${id}`,
+                            target: `${parentNode.id()}`,
+                        },
                     },
-                },
-            ]);
+                    {
+                        group: 'edges',
+                        data: {
+                            source: `${parentNode.id()}`,
+                            target: `${target?.id()}`,
+                        },
+                    },
+                ]);
 
-            compoundNodes.push(parentNode);
-            let center = getNodeCenterPos(this.cy.getElementById(id), target);
+                newCompEdges.forEach((edge) => {
+                    edge.style({
+                        width: targetWidthPair[target.id()],
+                        'arrow-scale': 1,
+                    });
+                });
 
-            let curParentPos = parentNode.position();
-            id;
+                compoundNodes.push(parentNode);
+                compoundEles = compoundEles.union(parentNode);
 
-            parentNode.shift({ x: center.x - curParentPos.x, y: center.y - curParentPos.y });
+                let center = getNodeCenterPos(this.cy.getElementById(id), target);
+
+                let curParentPos = parentNode.position();
+                this.persons[id].compoundEles = compoundEles;
+
+                parentNode.shift({ x: center.x - curParentPos.x, y: center.y - curParentPos.y });
+
+                this.persons[id].transactionsTo[target.id()].forEach((transaction) => {
+                    colCount++;
+                    col.merge(transaction);
+                    if (transaction.data('weight') == 4)
+                        parentNode.data('w1', parentNode.data('w1') + 1);
+                    else if (transaction.data('weight') == 5)
+                        parentNode.data('w2', parentNode.data('w2') + 1);
+                    else if (transaction.data('weight') == 6)
+                        parentNode.data('w3', parentNode.data('w3') + 1);
+                    else console.error('err');
+                    transaction._private.data['parent'] = parentNode.id();
+
+                    cy.add(transaction);
+                });
+
+                let nodeConst = squareUpNodes(col, colCount, this.cy);
+
+                // this.options.forceLayoutOptions.relativePlacementConstraint = nodeConst.rel;
+                // if (this.options.forceLayoutOptions.alignmentConstraint == undefined) {
+                //     this.options.forceLayoutOptions.alignmentConstraint = {};
+
+                //     this.options.forceLayoutOptions.alignmentConstraint.vertical = [];
+                //     this.options.forceLayoutOptions.alignmentConstraint.horizontal = [];
+                // }
+                // this.options.forceLayoutOptions.alignmentConstraint.vertical =
+                //     this.options.forceLayoutOptions.alignmentConstraint.vertical.concat(
+                //         nodeConst.ver
+                //     );
+                // this.options.forceLayoutOptions.alignmentConstraint.horizontal =
+                //     this.options.forceLayoutOptions.alignmentConstraint.horizontal.concat(
+                //         nodeConst.hor
+                //     );
+
+                this.curParentPos = parentNode.position();
+                parentNode.shift({ x: center.x - curParentPos.x, y: center.y - curParentPos.y });
+            } else {
+                removedEdges.forEach((edge) => {
+                    if (edge.target().id() == target.id()) this.cy.add(edge);
+                });
+            }
         });
-
-        let i = 0;
-        this.persons[id].targetSet.forEach((target) => {
-            let col = cy.collection();
-            let colCount = 0;
-            let parentNode = compoundNodes[i];
-
-            let center = {};
-            center.x = parentNode.position().x;
-            center.y = parentNode.position().y;
-
-            this.persons[id].transactionsTo[target.id()].forEach((transaction) => {
-                colCount++;
-                col.merge(transaction);
-
-                transaction.data('parent', parentNode.id());
-                transaction.data('compound', true);
-                transaction._private.data['parent'] = parentNode.id();
-
-                cy.add(transaction);
-            });
-            squareUpNodes(col, colCount, this.options.forceLayout, center);
-
-            let curParentPos = parentNode.position();
-
-            parentNode.shift({ x: center.x - curParentPos.x, y: center.y - curParentPos.y });
-            i++;
-        });
-        this.runForceLayout();
     }
 
     collapse(id) {
@@ -215,12 +394,39 @@ class transactionLayout {
                 count++;
             });
 
+            // let parentNode = this.cy.add([
+            //     {
+            //         group: 'nodes',
+            //         data: { cw: true },
+            //     },
+            // ]);
+
+            // let newCompEdges = this.cy.add([
+            //     {
+            //         group: 'edges',
+            //         data: {
+            //             source: `${id}`,
+            //             target: `${parentNode.id()}`,
+            //             type: 'compoundEdge',
+            //         },
+            //     },
+            //     {
+            //         group: 'edges',
+            //         data: {
+            //             source: `${parentNode.id()}`,
+            //             target: `${target?.id()}`,
+            //             type: 'compoundEdge',
+            //         },
+            //     },
+            // ]);
+
             let newEdge = this.cy.add([
                 {
                     group: 'edges',
                     data: {
                         source: `${id}`,
                         target: `${target.id()}`,
+                        type: 'long',
                     },
                 },
             ]);
@@ -240,7 +446,6 @@ class transactionLayout {
             });
 
             this.persons[id].removed = this.persons[id].removed.union(removed);
-            // this.persons[id].targetSet.delete(target);
         });
     }
 
@@ -249,32 +454,58 @@ class transactionLayout {
         this.cy.add(this.persons[id].removed);
     }
 
-    collapseTransactions(id, query) {
+    collapseTransactions(id, run, initCol) {
         if (this.persons[id].removed.length == 0) {
             this.collapse(id);
+            this.cy.remove(this.persons[id].compoundEles);
         } else {
-            this.expandTransactions(id);
+            this.compoundTrnasactions(id, initCol);
             this.persons[id].removed = this.cy.collection();
-            this.runForceLayout();
         }
+        if (run) this.runForceLayout();
+    }
+
+    collapseCompoundNode(node) {
+        let compoundNode = node.parent();
+        let removed = this.cy.remove(compoundNode.children());
+
+        if (removed == 0) {
+            this.cy.add(this.removedTransactions[node.id()]);
+
+            node.style({
+                label: ' ',
+            });
+            document.getElementById('htmlLabel:' + node.data('id')).style.display = 'none';
+            node.connectedEdges().forEach((edge) => edge.data('col', false));
+        } else {
+            this.removedTransactions[compoundNode.id()] = removed;
+            compoundNode.connectedEdges().forEach((edge) => edge.data('col', true));
+            compoundNode.style({
+                'text-halign': 'center',
+                'text-valign': 'center',
+                'font-size': 100,
+            });
+            document.getElementById('htmlLabel:' + compoundNode.data('id')).style.display = 'block';
+        }
+        this.runForceLayout();
     }
 
     runForceLayout() {
         this.cy.layout(this.options.forceLayoutOptions).run();
 
         if (this.options.forceLayoutOptions.fixedNodeConstraint == undefined) {
-            let constraints = [];
+            // let constraints = [];
 
-            this.cy.nodes().forEach((node) => {
-                if (node.data('type') == 'person') {
-                    constraints.push({
-                        nodeId: node.id(),
-                        position: node.position(),
-                    });
-                }
-            });
+            // this.cy.nodes().forEach((node) => {
+            //     if (node.data('type') == 'person') {
+            //         constraints.push({
+            //             nodeId: node.id(),
+            //             position: node.position(),
+            //         });
+            //     }
+            // });
             this.options.forceLayoutOptions.randomize = false;
-            // this.options.forceLayoutOptions.fixedNodeConstraint = constraints;
+            this.options.forceLayoutOptions.fit = false;
         }
     }
 }
@@ -288,12 +519,13 @@ function Layout(options) {
 
 Layout.prototype.run = function () {
     let layout = new transactionLayout(this.cy, this.options);
+    this.runForceLayout = () => layout.runForceLayout();
+    this.collapseTransactions = (id, run) => layout.collapseTransactions(id, true, false);
+    this.compoundTransactions = (id) => layout.compoundTrnasactions(id);
+    this.collapseCompoundNode = (node) => layout.collapseCompoundNode(node);
+
     layout.initData();
     layout.runForceLayout();
-
-    this.runForceLayout = () => layout.runForceLayout();
-    this.collapseTransactions = (id) => layout.collapseTransactions(id);
-    this.compoundTransactions = (id) => layout.compoundTrnasactions(id);
 };
 
 export { Layout };

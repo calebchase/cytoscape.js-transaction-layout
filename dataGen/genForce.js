@@ -16,6 +16,7 @@ let personImages = [
     'f5.png',
     'f6.png',
 ];
+let weights = [2, 4];
 
 let names = [
     { f: 'Manny', l: 'Otto' },
@@ -32,11 +33,17 @@ let names = [
 
 let options = {
     personCount: 9,
-    personInteractionPercent: 0.2,
+    personInteractionPercent: 0.175,
     transactionRange: [10, 15],
 };
 
 let eles = [];
+
+function scale(n) {
+    if (n > 20) return n;
+    if (Math.random() > 0.7) return scale(n * 1.5);
+    return n;
+}
 
 function getRandomIntInRange(range) {
     let a = range[0],
@@ -51,11 +58,16 @@ function doCreateTransactions(options) {
 
 function createTransactions(eles, options, i, j) {
     let transactionCount = getRandomIntInRange(options.transactionRange);
+    transactionCount = Math.floor(scale(transactionCount));
 
     for (let k = 0; k < transactionCount; k++) {
         eles.push({
             group: 'nodes',
-            data: { id: `${i}:${j}:${k}`, type: 'transaction' },
+            data: {
+                id: `${i}:${j}:${k}`,
+                type: 'transaction',
+                weight: getRandomIntInRange(weights),
+            },
         });
 
         eles.push({
