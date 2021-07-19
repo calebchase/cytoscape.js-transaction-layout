@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             template: [
                 {
-                    zoomRange: [0.01, 100],
+                    zoomRange: [0.001, 1000],
 
                     template: {
                         html: `
