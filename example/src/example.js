@@ -163,10 +163,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (node.data('type') == 'transaction') return 0;
                 return 30000;
             },
-            // tile: false,
-
             gravityRangeCompound: 100.5,
             gravityCompound: 100.0,
+
             idealEdgeLength: (edge) => {
                 if (edge.data('col')) {
                     console.log('wowowowowo');
@@ -181,8 +180,6 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             edgeElasticity: (edge) => 0.75,
             nodeSeparation: 4000,
-            // gravityRangeCompound: 10000,
-            // gravityCompound: 10000.0,
         },
     });
     layoutTrans.run();
