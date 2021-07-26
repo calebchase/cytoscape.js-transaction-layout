@@ -32,7 +32,6 @@ function getSquareTranspose(eles, cy) {
         } else if (curSide % 2 == 0) {
             // insert Bottom
             for (let j = 0; i < count && j < curArrDim; i++ && j++) {
-                // arr[curSide / 2 + 1].push(eles[i]);
                 if (arr[curSide / 2 + 1][j] != undefined) {
                     eles[i] = arr[curSide / 2 + 1][j];
                 } else {
@@ -44,7 +43,6 @@ function getSquareTranspose(eles, cy) {
         } else {
             // insert left
             for (let j = 0; i < count && j < curArrDim; i++ && j++) {
-                // arr[j].push(eles[i]);
                 if ((eles[i] = arr[j][curArrDim] != undefined)) eles[i] = arr[j][curArrDim];
                 else i--;
             }
@@ -356,11 +354,26 @@ class transactionLayout {
     }
 
     collapseCompoundNode(node) {
-        let compoundNode = node.parent();
+        let compoundNode = node;
+        if (node.isChild()) compoundNode = node.parent();
+
         let removed = this.cy.remove(compoundNode.children());
 
         if (removed == 0) {
+            // parentNode.shift({ x: center.x - curParentPos.x, y: center.y - curParentPos.y });
+            console.log('beep');
+
+            let center = {};
+            center.x = node.position('x');
+            center.y = node.position('y');
+
             this.cy.add(this.removedTransactions[node.id()]);
+
+            let curParentPos = node.position();
+            node.shift({ x: center.x - curParentPos.x, y: center.y - curParentPos.y });
+            console.log(center);
+            console.log(curParentPos);
+            console.log(node.position());
 
             node.style({
                 label: ' ',

@@ -9,20 +9,35 @@ let personImages = [
     'm2.png',
     'm3.png',
     'm4.png',
+    'm5.png',
+    'm6.png',
+    'm7.png',
+    'm8.png',
     'f1.png',
     'f2.png',
     'f3.png',
     'f4.png',
     'f5.png',
     'f6.png',
+    'f7.png',
+    'f8.png',
+    'f9.png',
 ];
 let weights = [2, 4];
 
 let names = [
+    { f: 'Bobby', l: 'Nelson' },
+    { f: 'Larry', l: 'Cooper' },
+    { f: 'Howard', l: 'Rivera' },
+    { f: 'Ernest', l: 'Baker' },
     { f: 'Manny', l: 'Otto' },
     { f: 'Zack', l: 'Haven' },
     { f: 'Archie', l: 'Ramirez' },
     { f: 'Darryl', l: 'Hammond' },
+
+    { f: 'Cynthia', l: 'Bowen' },
+    { f: 'Mable', l: 'Drake' },
+    { f: 'Ada', l: 'Nichols' },
     { f: 'Philis', l: 'Lyn' },
     { f: 'Lisa', l: 'Everlee' },
     { f: 'Breana', l: 'Alyse' },
@@ -32,8 +47,8 @@ let names = [
 ];
 
 let options = {
-    personCount: 9,
-    personInteractionPercent: 0.175,
+    personCount: names.length,
+    personInteractionPercent: 0.07,
     transactionRange: [10, 15],
 };
 

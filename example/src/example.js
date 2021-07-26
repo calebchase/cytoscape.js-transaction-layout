@@ -201,11 +201,11 @@ document.addEventListener('DOMContentLoaded', function () {
         layoutTrans.collapseCompoundNode(event.target);
     });
 
-    cy.on('tap', 'node[type = "person"]', (event) => {
-        console.log(event.target.data('id'));
-        document.getElementById('htmlLabel:' + event.target.data('id')).innerHTML =
-            '<div>test</div>';
-    });
+    // cy.on('tap', 'node[type = "person"]', (event) => {
+    //     console.log(event.target.data('id'));
+    //     document.getElementById('htmlLabel:' + event.target.data('id')).innerHTML =
+    //         '<div>test</div>';
+    // });
 
     cy.cxtmenu({
         selector: 'node',
