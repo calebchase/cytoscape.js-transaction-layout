@@ -90,7 +90,6 @@ layout.toggleCompoundNode(node);
 -   Each transaction node must have exactly one directed edge entering and one directed edge leaving the node
 -   Ideally the graph should be completely connected
 -   The graph layout will automatically convert this format to compound nodes with transactions as children
--   Access
 
 ## Example Demo
 
