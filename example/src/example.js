@@ -142,6 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
             ],
         },
     });
+
     cy.nodes().forEach(function (ele) {
         if (ele.data('type') == 'person') ele.addClass('person');
         else ele.addClass('transaction');
@@ -149,39 +150,59 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let layoutTrans = cy.layout({
         name: 'transaction',
+
+        onCollapseCompoundNode: (compoundNode) => {
+            document.getElementById('htmlLabel:' + compoundNode.data('id')).style.display = 'block';
+
+            compoundNode.connectedEdges().forEach((edge) => {
+                edge.data('collapsed', true);
+            });
+        },
+        onExpandCompoundNode: (compoundNode) => {
+            document.getElementById('htmlLabel:' + compoundNode.data('id')).style.display = 'none';
+
+            compoundNode.connectedEdges().forEach((edge) => {
+                edge.data('collapsed', false);
+            });
+        },
+
+        edgeWidthFunc: (transactionCount) => {
+            return transactionCount * 1.5;
+        },
+
+        transactionsCompareTo: (a, b) => {
+            return a.data('weight') - b.data('weight');
+        },
+
+        parentSelector: '[type = "person"]',
+        transactionSelector: '[type = "transaction"]',
+
         forceLayoutOptions: {
             name: 'fcose',
             quality: 'proof',
             animationDuration: 300,
             animate: false,
-
-            numIter: 25000,
+            numIter: 50000,
             sampleSize: 50,
 
-            nodeRepulsion: (node) => {
-                if (node.data('cw')) return 300000;
-                if (node.data('type') == 'transaction') return 0;
-                return 30000;
+            nodeRepulsion: () => {
+                return 300000;
             },
+
             gravityRangeCompound: 100.5,
             gravityCompound: 100.0,
 
             idealEdgeLength: (edge) => {
-                if (edge.data('col')) {
-                    console.log('wowowowowo');
-                    return 30000 / 60;
-                }
-                if (edge.data('type') == 'long') {
-                    console.log('1312312312');
-                    return 30000 / 30;
-                }
-                let count = edge.data('count');
-                return 30000 / (count != undefined ? 20 : 80);
+                if (edge.data('collapsed') == true) return 30000 / 55;
+                return 30000 / 80;
             },
-            edgeElasticity: (edge) => 0.75,
+
+            edgeElasticity: () => 0.75,
+
             nodeSeparation: 4000,
         },
     });
+
     layoutTrans.run();
 
     cy.cxtmenu({
@@ -190,50 +211,40 @@ document.addEventListener('DOMContentLoaded', function () {
         commands: [
             {
                 content: 'Force Layout',
-                select: function (ele) {
-                    layoutTrans.runForceLayout();
+                select: function () {
+                    layoutTrans.runForceLayout({
+                        randomize: false,
+                        fit: false,
+                    });
                 },
             },
         ],
     });
 
     cy.on('tap', 'node[type != "person"]', (event) => {
-        layoutTrans.collapseCompoundNode(event.target);
+        layoutTrans.toggleCompoundNode(event.target);
+        layoutTrans.runForceLayout({
+            randomize: false,
+            fit: false,
+        });
     });
 
-    // cy.on('tap', 'node[type = "person"]', (event) => {
-    //     console.log(event.target.data('id'));
-    //     document.getElementById('htmlLabel:' + event.target.data('id')).innerHTML =
-    //         '<div>test</div>';
-    // });
+    cy.nodes('[type = "transaction"]').forEach((transaction) => {
+        let parentNode = transaction.parent();
+        if (transaction.data('weight') == 4) transaction.style('background-color', 'lightblue');
+        else if (transaction.data('weight') == 5)
+            transaction.style('background-color', 'lightpink');
 
-    cy.cxtmenu({
-        selector: 'node',
-
-        commands: [
-            {
-                content: 'Compound',
-                select: function (ele) {
-                    layoutTrans.compoundTransactions(ele.id());
-                },
-            },
-            {
-                content: 'Toggle Collapse',
-                select: function (ele) {
-                    layoutTrans.collapseTransactions(ele.id(), true);
-                },
-            },
-            {
-                content: 'Collapse Compound',
-                select: function (ele) {
-                    layoutTrans.collapseCompoundNode(ele);
-                },
-            },
-        ],
+        if (transaction.data('weight') == 4)
+            parentNode.data('w1', (parentNode.data('w1') || 0) + 1);
+        else if (transaction.data('weight') == 5)
+            parentNode.data('w2', (parentNode.data('w2') || 0) + 1);
+        else if (transaction.data('weight') == 6)
+            parentNode.data('w3', (parentNode.data('w3') || 0) + 1);
     });
+
     setTimeout(function () {
         cy.nodes('[type = "cpn"]').forEach((node) => {
-            console.log('cpn');
             document.getElementById('htmlLabel:' + node.data('id')).style.display = 'none';
         });
     }, 100);
