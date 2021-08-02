@@ -1,8 +1,8 @@
 {
-    "name": "cytoscape.js-transaction-layout",
+    "name": "cytoscape-transaction-layout",
     "version": "1.0.0",
-    "description": "TODO",
-    "main": "index.js",
+    "description": "A specialized layout for graphs with large numbers of transactions between people.",
+    "main": "dist/main.bundle.js",
     "repository": {
         "type": "git",
         "url": "https://github.com/calebchase/cytoscape.js-transaction-layout.git"
@@ -15,6 +15,12 @@
         {
             "name": "Caleb Chase"
         }
+    ],
+    "keywords": [
+        "cytoscape",
+        "extension",
+        "transaction",
+        "layout"
     ],
     "scripts": {
         "start": "webpack serve --config webpack.config.js",
