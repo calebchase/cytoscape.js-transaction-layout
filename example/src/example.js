@@ -2,7 +2,8 @@ import cytoscape from 'cytoscape';
 import fcose from 'cytoscape-fcose';
 import cxtmenu from 'cytoscape-cxtmenu';
 import { register as htmlnode } from 'cytoscape-html-node';
-import { register as transactionLayout } from './../../src';
+// import { register as transactionLayout } from './../../src';
+import { register as transactionLayout } from './../../dist/main.bundle.js';
 import exampleData from './testData.txt';
 
 cytoscape.use(fcose);
