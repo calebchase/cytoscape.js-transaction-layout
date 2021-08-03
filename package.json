@@ -1,6 +1,6 @@
 {
     "name": "cytoscape-transaction-layout",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "A specialized layout for graphs with large numbers of transactions between people.",
     "main": "dist/main.bundle.js",
     "repository": {
