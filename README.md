@@ -64,7 +64,7 @@ let options = {
     transactionSelector: '[type = "transaction"]',
 
     // fcose layout options, default options listed
-    // see [fcose github](https://github.com/iVis-at-Bilkent/cytoscape.js-fcose) for more information
+    // see https://github.com/iVis-at-Bilkent/cytoscape.js-fcose for more information
     forceLayoutOptions: {
         name: 'fcose',
         quality: 'proof',
@@ -72,7 +72,7 @@ let options = {
     },
 };
 
-An object containing layout functions is returned
+// An object containing layout functions is returned
 let layout = cy.layout(options).run();
 
 // Runs the focse layout
