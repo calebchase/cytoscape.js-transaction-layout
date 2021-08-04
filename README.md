@@ -9,7 +9,7 @@ This is a specialized layout for graphs with large numbers of transactions betwe
 ## Dependencies
 
 -   cytoscape: ^3.19.0
--   cytoscape-fcose: ^2.1.0
+-   cytoscape-fcose: 2.0.0
 
 ## Usage instructions
 
